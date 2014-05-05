@@ -1,0 +1,8 @@
+---
+- note:
+    Build 'hello' application
+- cxx:
+    - hello.cpp
+- cxxlink:
+    - hello: hello.o
+...

@@ -1,0 +1,5 @@
+# ---
+# Build 'hello' application
+build $builddir/hello.o: cxx $srcdir/hello.cpp
+build $bindir/hello: cxxlink $builddir/hello.o
+# ...

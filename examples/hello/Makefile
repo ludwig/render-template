@@ -1,0 +1,24 @@
+# sample ninja makefile
+
+build:
+	ninja -v
+
+ninja: build.ninja targets.ninja
+
+build.ninja:
+	skel build.ninja srcdir=. bindir=. > $@
+
+targets.ninja:
+	skel targets.ninja targets.yaml > $@
+
+seppuku:
+	rm -f targets.ninja
+
+clean:
+	ninja -v -t clean
+	rm -rf build
+
+.PHONY: build clean build.ninja targets.ninja
+
+# vim: ft=make
+# EOF

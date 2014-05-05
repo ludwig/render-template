@@ -1,0 +1,32 @@
+# the usual variable bindings
+bindir = .
+builddir = build
+srcdir = .
+cc = clang
+cflags = -Wall
+cxx = clang++
+cxxflags = -std=c++11 -Wall
+ldflags = 
+libs = 
+
+rule cc
+    command = $cc -MMD -MT $out -MF $out.d $cflags -c $in -o $out
+    description = CC $out
+    depfile = $out.d
+
+rule cclink
+    command = $cc $ldflags -o $out $in $libs
+    description = CC-LINK $out
+
+rule cxx
+    command = $cxx -MMD -MT $out -MF $out.d $cxxflags -c $in -o $out
+    description = CXX $out
+    depfile = $out.d
+
+rule cxxlink
+    command = $cxx $ldflags -o $out $in $libs
+    description = CXX-LINK $out
+
+include targets.ninja
+
+# EOF
