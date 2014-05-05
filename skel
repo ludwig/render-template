@@ -17,10 +17,11 @@ def cat(filename):
 
 SkelInfo = namedtuple('SkelInfo', 'action,desc')
 SKELETONS = OrderedDict([
-    ('Makefile.ninja', SkelInfo(cat, 'Generates a sample Makefile that uses the ninja build system')),
-    ('build.ninja', SkelInfo('ninja_build', 'Generates a sample build.ninja file')),
-    ('targets.ninja', SkelInfo('ninja_targets', 'Generates targets.ninja from a targets.yaml build spec file')),
-    ('targets.yaml', SkelInfo(cat, 'Generates a sample targets.yaml file')),
+    ('Makefile.ninja', SkelInfo(cat, 'Prints out a sample Makefile that uses the ninja build system')),
+    ('build.ninja', SkelInfo('ninja_build', 'Creates a sample build.ninja file')),
+    ('targets.ninja', SkelInfo('ninja_targets', 'Creates targets.ninja from a targets.yaml build spec file')),
+    ('targets.yaml', SkelInfo(cat, 'Prints out a sample targets.yaml file')),
+    ('CMakeLists.txt', SkelInfo(cat, 'Prints out a cmake configuration file')),
 ])
 
 def usage():
