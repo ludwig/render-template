@@ -165,7 +165,7 @@ def main(argv):
                                 # in this case, we are given the name of the
                                 # binary, and want to link the
                                 target = binpath(build_stmt)
-                                inputs = [buildpath("{}.o".format(target))]
+                                inputs = [buildpath("{}.o".format(build_stmt))]
                             inputs_as_str = ' '.join(inputs)
                             sys.stdout.write("build {target}: {rule} {inputs}{more}\n".format(
                                 target = target,
