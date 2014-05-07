@@ -6,10 +6,10 @@ build:
 ninja: build.ninja targets.ninja
 
 build.ninja:
-	skel build.ninja srcdir=. bindir=. > $@
+	render-template.py build.ninja srcdir=. bindir=. > $@
 
 targets.ninja:
-	skel targets.ninja targets.yaml > $@
+	render-template.py targets.ninja --srcdir=. --bindir=. targets.yaml > $@
 
 seppuku:
 	rm -f targets.ninja
