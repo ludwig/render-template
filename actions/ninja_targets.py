@@ -28,7 +28,7 @@ def parse_yaml(filename):
     return docs
 
 def usage():
-    sys.stderr.write("Usage: skel targets.ninja <target.yaml> [...]\n")
+    sys.stderr.write("Usage: render-template.py targets.ninja [options] <target.yaml> [...]\n")
 
 def main(argv):
 
@@ -44,41 +44,41 @@ def main(argv):
     bindir = 'bin'
 
     # read the yaml files and fill in 'docs'
-    if len(argv) > 0:
-
-        parser = argparse.ArgumentParser()
-        parser.add_argument("files", nargs='+', help="list of .yaml build specs, or .c/.cpp source files")
-        parser.add_argument("--srcdir", help="location of source directory")
-        parser.add_argument("--builddir", help="location of build directory")
-        parser.add_argument("--bindir", help="location of bin directory (for linked apps from $buildddir)")
-        args = parser.parse_args(argv)
-
-        if args.srcdir:
-            srcdir = args.srcdir
-            assert os.path.exists(srcdir)
-
-        if args.builddir:
-            builddir = args.builddir
-
-        if args.bindir:
-            bindir = args.bindir
-
-        for filename in args.files:
-            assert os.path.exists(filename)
-            root, ext = os.path.splitext(filename)
-            if ext == '.yaml':
-                docs.extend(doc for doc in parse_yaml(filename))
-            elif ext.lower() == '.c':
-                obj = '{}.o'.format(root)
-                exe = root
-                docs.append([{'note': filename}, {'cc': [filename]}, {'cclink': [{exe: obj}]}])
-            elif ext.lower() in ('.cc', '.cpp', '.cxx'):
-                obj = '{}.o'.format(root)
-                exe = root
-                docs.append([{'note': filename}, {'cxx': [filename]}, {'cxxlink': [{exe: obj}]}])
-    else:
+    if len(argv) == 0:
         usage()
         sys.exit(1)
+
+    # parse options
+    parser = argparse.ArgumentParser()
+    parser.add_argument("files", nargs='+', help="list of .yaml build specs, or .c/.cpp source files")
+    parser.add_argument("--srcdir", help="location of source directory")
+    parser.add_argument("--builddir", help="location of build directory")
+    parser.add_argument("--bindir", help="location of bin directory (for linked apps from $buildddir)")
+    args = parser.parse_args(argv)
+
+    if args.srcdir:
+        srcdir = args.srcdir
+        assert os.path.exists(srcdir)
+
+    if args.builddir:
+        builddir = args.builddir
+
+    if args.bindir:
+        bindir = args.bindir
+
+    for filename in args.files:
+        assert os.path.exists(filename)
+        root, ext = os.path.splitext(filename)
+        if ext == '.yaml':
+            docs.extend(doc for doc in parse_yaml(filename))
+        elif ext.lower() == '.c':
+            obj = '{}.o'.format(root)
+            exe = root
+            docs.append([{'note': filename}, {'cc': [filename]}, {'cclink': [{exe: obj}]}])
+        elif ext.lower() in ('.cc', '.cpp', '.cxx'):
+            obj = '{}.o'.format(root)
+            exe = root
+            docs.append([{'note': filename}, {'cxx': [filename]}, {'cxxlink': [{exe: obj}]}])
 
     def srcpath(filename):
         filename = strip_prefix(filename, srcdir)
@@ -182,9 +182,9 @@ def main(argv):
             #Build('$bindir/heightmap', 'cclink', ['$builddir/heightmap.o', '$builddir/glad.o'], Bind(libs='-lglfw3 -framework OpenGL -framework GLUT'))
         ]
 
-    # finally, print out the build instructions to stdout
-    for build in builds:
-        sys.stdout.write('{}\n'.format(build))
+        # finally, print out the build instructions to stdout
+        for build in builds:
+            sys.stdout.write('{}\n'.format(build))
 
 if __name__ == '__main__':
     main(sys.argv[1:])

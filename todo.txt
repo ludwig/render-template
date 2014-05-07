@@ -8,6 +8,7 @@ better error handling when parsing targets.yaml
 --low--------------------------------------------------------------------------
 
 --done-------------------------------------------------------------------------
+renamed 'skel' project to 'render-template'
 use argparse in targets.ninja for reading --srcdir, --builddir, --bindir
 generate targets.ninja from yaml file
 customize build.ninja via command line arguments and environment variables

@@ -6,13 +6,13 @@ from collections import namedtuple, OrderedDict
 
 
 skeldir = os.path.dirname(os.path.realpath(sys.argv[0]))
-sys.path.insert(1, os.path.join(skeldir, 'mods'))
+sys.path.insert(1, os.path.join(skeldir, 'actions'))
 
 def cat(filename):
     """
     Writes filename to stdout
     """
-    with open(os.path.join(skeldir, 'files', filename)) as fp:
+    with open(os.path.join(skeldir, 'templates', filename)) as fp:
         sys.stdout.write(fp.read())
 
 SkelInfo = namedtuple('SkelInfo', 'action,desc')
