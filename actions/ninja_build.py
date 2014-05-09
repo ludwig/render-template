@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 """
-Creates build.ninja template, and prints it to stdout
+Creates a build.ninja file from a template string, and prints it to stdout
 
-You'll have to redirect output to a file in order to save it.
+Note that you'll have to redirect output to a file in order to save it.
 
-    $ make_build_ninja.py > build.ninja
+    $ render-template.py build.ninja > build.ninja
 
 You can also specify variables in the argument list
 
-    $ make_build_ninja.py cc=clang cxx=clang++ libs="$(pkg-config sdl2 --libs) $(pkg-config glfw3 --libs)"
+    $ render-template.py build.ninja \
+            cc=clang cxx=clang++ \
+            cxxflags="-std=c++11 -Wall $(pkg-config sdl2 --cflags) $(pkg-config glfw3 --cflags)" \
+            libs="$(pkg-config sdl2 --libs) $(pkg-config glfw3 --libs)" \
+            home="$HOME"
 
 """
 
@@ -64,9 +68,9 @@ DEFAULT_VARIABLE_BINDINGS = dict(
     libs = '',
 )
 
-def get_template_context(argv):
+def build_template_context(argv):
     """
-    Read parameters from environment variables
+    Determine template context from environment variables and command line arguments.
     """
 
     ctx = DEFAULT_VARIABLE_BINDINGS.copy()
@@ -106,7 +110,7 @@ def get_template_context(argv):
     return ctx
 
 def main(argv):
-    ctx = get_template_context(argv)
+    ctx = build_template_context(argv)
     template = BUILD_NINJA_TEMPLATE.format(**ctx)
     sys.stdout.write(template)
 
