@@ -1,13 +1,15 @@
 --high-------------------------------------------------------------------------
-add bash completion to skel
+add simple bash completion on the template names to render-template.py
+add bash completion on template actions? (think about how to do this one)
 
 --normal-----------------------------------------------------------------------
-clean up code in 'skel targets.ninja'
+clean up code in ninja_targets.py
 better error handling when parsing targets.yaml
 
 --low--------------------------------------------------------------------------
 
 --done-------------------------------------------------------------------------
+clean up code in render-template.py
 renamed 'skel' project to 'render-template'
 use argparse in targets.ninja for reading --srcdir, --builddir, --bindir
 generate targets.ninja from yaml file
