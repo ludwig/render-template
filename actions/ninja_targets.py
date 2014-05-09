@@ -1,6 +1,95 @@
 #!/usr/bin/env python
 """
-http://martine.github.io/ninja/manual.html#_build_statements
+This python module generates a targets.ninja file suitable for inclusion from 'build.ninja'.
+
+Ninja build statements
+
+    <http://martine.github.io/ninja/manual.html#_build_statements>
+
+Here's a somewhat informal description of the kind of yaml files this file can parse:
+
+    <yaml> :=
+        ---
+        <document1>
+        --
+        <...>
+        ---
+        <documentN>
+        ...
+
+    <document> :=
+        - note: <string-value>
+        - rebind: <list-of-bindings>
+        - <rule-name1>: <list-of-targets>
+
+    <list-of-bindings> :=
+        - <binding1>
+        - <...>
+        - <bindingN>
+
+    <binding> := <binding-name>: <binding-value-as-string>
+
+    <list-of-targets>
+        - <target1>
+        - <...>
+        - <targetN>
+
+    <target> := <target-as-string> | <target-as-dict>
+
+    <target-as-string> := <target-name>
+
+    <target-as-dict> := <target-name>: <input-list>
+
+    <input-list> := '' | ( '[' <comma-delimited-list-of-strings> '] ) | <input-list-multiline>
+
+    <input-list-multiline> :=
+        - <input-name>: <input-value>
+
+Example yaml file
+
+    ---
+    - note:
+        Compile object files in debug mode
+    - rebind:
+        - cxxflags: $cxxflags -DDEBUG -g
+        - ldflags: -L$HOME/opt/local/lib
+    - cxx:
+        - hello.g.o: hello.cpp
+        - goodbye.g.o: goodbye.cpp
+    - cxxlink:
+        - hello-g: hello.g.o
+        - goodbye-g: goodbye.g.o
+    ---
+    - note:
+        Compile object files in optimized mode
+    - rebind:
+        - cxxflags: $cxxflags -O3
+    - cxx:
+        - hello.cpp
+        - goodbye.cpp
+    - cxxlink:
+        - hello
+        - goodbye
+    ---
+    - note:
+        Compile GLFW3 examples
+    - rebind:
+        - libs: -lglfw3 -framework OpenGL -framework GLUT
+    - cc:
+        - glad.o: deps/glad.c
+        - tinycthread.o: deps/tinycthread.c
+        - heightmap.c
+    - cxx:
+        - simple.c
+    - cclink:
+        - heightmap:
+            - heightmap.o
+            - glad.o
+    - cxxlink:
+        - simple
+    ...
+
+
 """
 
 import os, sys
@@ -32,23 +121,22 @@ def usage():
 
 def main(argv):
 
-    # list of build instructions
+    if len(argv) == 0:
+        usage()
+        sys.exit(1)
+
+    # list of build instructions (currently unused)
     builds = []
 
     # list of yaml records, which we'll transform into a list of build instructions
     docs = []
 
-    # default values for these three directories (will be used to strip prefix)
+    # default values for these three directories (will be used to strip file prefixes on the source files)
     srcdir = 'src'
     builddir = 'build'
     bindir = 'bin'
 
-    # read the yaml files and fill in 'docs'
-    if len(argv) == 0:
-        usage()
-        sys.exit(1)
-
-    # parse options
+    # parse command line options
     parser = argparse.ArgumentParser()
     parser.add_argument("files", nargs='+', help="list of .yaml build specs, or .c/.cpp source files")
     parser.add_argument("--srcdir", help="location of source directory")
@@ -66,6 +154,7 @@ def main(argv):
     if args.bindir:
         bindir = args.bindir
 
+    # parse the yaml files and whatever else we get in args.files
     for filename in args.files:
         assert os.path.exists(filename)
         root, ext = os.path.splitext(filename)
@@ -91,13 +180,6 @@ def main(argv):
     def binpath(filename):
         filename = strip_prefix(filename, bindir)
         return '$bindir/{}'.format(filename)
-
-    if False:
-        print(strip_prefix('src/foo/bar.c','./src/'))
-
-    if False:
-        from pprint import pprint
-        pprint(docs)
 
     for doc in docs:
         note = None
@@ -175,16 +257,11 @@ def main(argv):
                             ))
     print('# ...')
 
-    if False:
-        builds = [
-            #Build('$builddir/simple.o', 'cxx', ['$srcdir/simple.c'], Bind(srcdir='.',bindir='.')),
-            #Build('$bindir/simple', 'cclink', ['$builddir/simple.o']),
-            #Build('$bindir/heightmap', 'cclink', ['$builddir/heightmap.o', '$builddir/glad.o'], Bind(libs='-lglfw3 -framework OpenGL -framework GLUT'))
-        ]
+    # XXX: not currently used (fix this!)
+    for build in builds:
+        sys.stdout.write('{}\n'.format(build))
 
-        # finally, print out the build instructions to stdout
-        for build in builds:
-            sys.stdout.write('{}\n'.format(build))
+    return
 
 if __name__ == '__main__':
     main(sys.argv[1:])
