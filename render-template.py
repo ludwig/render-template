@@ -4,32 +4,29 @@ import os, sys, imp
 import importlib
 from collections import namedtuple, OrderedDict
 
+templateroot = os.path.dirname(os.path.realpath(sys.argv[0]))
+sys.path.insert(1, os.path.join(templateroot, 'actions'))
 
-skeldir = os.path.dirname(os.path.realpath(sys.argv[0]))
-sys.path.insert(1, os.path.join(skeldir, 'actions'))
+Template = namedtuple('TemplateInfo', 'action,description')
+
+TEMPLATES = OrderedDict([
+    ('Makefile.ninja', Template(None, 'Prints out a sample Makefile that uses the ninja build system')),
+    ('build.ninja', Template('ninja_build', 'Creates a sample build.ninja file')),
+    ('targets.ninja', Template('ninja_targets', 'Creates targets.ninja from a targets.yaml build spec file')),
+    ('targets.yaml', Template(None, 'Prints out a sample targets.yaml file')),
+    ('CMakeLists.txt', Template(None, 'Prints out a cmake configuration file')),
+])
 
 def cat(filename):
-    """
-    Writes filename to stdout
-    """
-    with open(os.path.join(skeldir, 'templates', filename)) as fp:
+    """Writes filename to stdout"""
+    with open(os.path.join(templateroot, 'templates', filename), 'r') as fp:
         sys.stdout.write(fp.read())
-
-SkelInfo = namedtuple('SkelInfo', 'action,desc')
-SKELETONS = OrderedDict([
-    ('Makefile.ninja', SkelInfo(cat, 'Prints out a sample Makefile that uses the ninja build system')),
-    ('build.ninja', SkelInfo('ninja_build', 'Creates a sample build.ninja file')),
-    ('targets.ninja', SkelInfo('ninja_targets', 'Creates targets.ninja from a targets.yaml build spec file')),
-    ('targets.yaml', SkelInfo(cat, 'Prints out a sample targets.yaml file')),
-    ('CMakeLists.txt', SkelInfo(cat, 'Prints out a cmake configuration file')),
-])
 
 def usage():
     sys.stderr.write("Usage: {} <template> [ <template-options> ]\n".format(sys.argv[0]))
     sys.stderr.write("\nWhere <template> is one of:\n\n")
-    for skel in SKELETONS:
-        desc = SKELETONS[skel].desc
-        sys.stderr.write('    {0} - {1}\n'.format(skel, SKELETONS[skel].desc))
+    for name, tmpl in TEMPLATES.items():
+        sys.stderr.write('    {0} - {1}\n'.format(name, tmpl.description))
     sys.stderr.write('\n')
 
 def main():
@@ -38,16 +35,18 @@ def main():
         usage()
         sys.exit(1)
 
-    skel = sys.argv[1]
-    info = SKELETONS.get(skel)
+    name = sys.argv[1]
+    tmpl = TEMPLATES.get(name)
 
-    if not info:
+    if not tmpl:
         usage()
         sys.exit(2)
-    elif callable(info.action):
-        info.action(skel)
+    elif not tmpl.action:
+        cat(name)
+    elif callable(tmpl.action):
+        info.action(sys.argv[1:])
     else:
-        modname = info.action
+        modname = tmpl.action
         mod = importlib.import_module(modname)
         mod.main(sys.argv[2:])
 
