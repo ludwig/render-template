@@ -29,6 +29,7 @@ cxx = {cxx}
 cxxflags = {cxxflags}
 ldflags = {ldflags}
 libs = {libs}
+ar = {ar}
 {other-bindings}
 rule cc
     command = $cc -MMD -MT $out -MF $out.d $cflags -c $in -o $out
@@ -48,6 +49,10 @@ rule cxxlink
     command = $cxx $ldflags -o $out $in $libs
     description = CXX-LINK $out
 
+rule ar
+    command = rm -f $out && $ar rcs $out $in
+    description = AR $out
+
 include targets.ninja
 
 # EOF
@@ -66,6 +71,7 @@ DEFAULT_VARIABLE_BINDINGS = dict(
     cxxflags = '-std=c++11 -Wall',
     ldflags = '',
     libs = '',
+    ar = 'ar',
 )
 
 def build_template_context(argv):

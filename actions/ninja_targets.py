@@ -223,6 +223,9 @@ def main(argv):
                                 if rule in ('cc', 'cxx'):
                                     target = buildpath(target)
                                     inputs = [srcpath(f) for f in inputs]
+                                elif rule == 'ar':
+                                    target = buildpath(target)
+                                    inputs = [buildpath(f) for f in inputs]
                                 elif rule.endswith('link'):
                                     target = binpath(target)
                                     inputs = [buildpath(f) for f in inputs]
@@ -243,6 +246,15 @@ def main(argv):
                                 assert ext.lower() in ('.c', '.cpp', '.cxx', '.cc')
                                 target = buildpath("{}.o".format(targetbase))
                                 inputs = [srcpath(build_stmt)]
+                            elif rule == 'ar':
+                                # XXX: simplify this process!
+                                if isinstance(build_stmts, dict):
+                                    target = buildpath(build_stmt)
+                                    inputs = build_stmts[build_stmt]
+                                    if isinstance(inputs, basestring):
+                                        inputs = [buildpath(inputs)]
+                                    elif isinstance(inputs, list):
+                                        inputs = [buildpath(f) for f in inputs]
                             elif rule.endswith('link'):
                                 # in this case, we are given the name of the
                                 # binary, and want to link the
