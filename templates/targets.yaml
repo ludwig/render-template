@@ -4,5 +4,32 @@
 - cxx:
     - hello.cpp
 - cxxlink:
-    - hello: hello.o
+    - hello
+---
+- note:
+    Static library for common code
+- cc:
+    - foo.c
+    - bar.c
+    - quux.c
+- ar:
+    - libfoo.a:
+        - foo.o
+        - bar.o
+        - quux.o
+---
+- note:
+    Another example
+- rebind:
+    - libs: $libs $builddir/libfoo.a
+    - cflags: $cflags -std=c11
+- cc:
+    - goodbye.c
+    - english.c
+    - spanish.c
+    - japanese.c
+- cclink:
+    - goodbye: [goodbye.o, english.o, libfoo.a]
+    - adios: [goodbye.o, spanish.o, libfoo.a]
+    - sayonara: [goodbye.o, japanese.o, libfoo.a]
 ...
