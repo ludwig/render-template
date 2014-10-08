@@ -1,9 +1,7 @@
 # sample ninja makefile
 
-build:
+build: targets.ninja
 	ninja -v
-
-ninja: build.ninja targets.ninja
 
 build.ninja:
 	render-template.py build.ninja srcdir=. bindir=. > $@
@@ -11,13 +9,10 @@ build.ninja:
 targets.ninja:
 	render-template.py targets.ninja --srcdir=. --bindir=. targets.yaml > $@
 
-seppuku:
-	rm -f targets.ninja
-
 clean:
 	ninja -v -t clean
 
-.PHONY: build clean build.ninja targets.ninja
+.PHONY: build clean build.ninja
 
 # vim: ft=make
 # EOF
