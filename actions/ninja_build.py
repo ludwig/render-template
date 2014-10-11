@@ -66,7 +66,7 @@ DEFAULT_VARIABLE_BINDINGS = dict(
     builddir = 'build',
     srcdir = 'src',
     cc = 'gcc',
-    cflags = '-Wall',
+    cflags = '-std=c11 -Wall',
     cxx = 'g++',
     cxxflags = '-std=c++11 -Wall',
     ldflags = '',
