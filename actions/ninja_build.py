@@ -37,7 +37,7 @@ rule cc
     depfile = $out.d
 
 rule cclink
-    command = $cc $ldflags -o $out $in $libs
+    command = $cc $ldflags $in $libs -o $out
     description = CC-LINK $out
 
 rule cxx
@@ -46,7 +46,7 @@ rule cxx
     depfile = $out.d
 
 rule cxxlink
-    command = $cxx $ldflags -o $out $in $libs
+    command = $cxx $ldflags $in $libs -o $out
     description = CXX-LINK $out
 
 rule ar
